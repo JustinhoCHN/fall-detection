@@ -1,0 +1,26 @@
+# Copyright (c) 2020 NVIDIA Corporation.  All rights reserved.
+#
+# NVIDIA Corporation and its licensors retain all intellectual property
+# and proprietary rights in and to this software, related documentation
+# and any modifications thereto.  Any use, reproduction, disclosure or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA Corporation is strictly prohibited.
+
+# --------------------------------------------------
+# OTA Model Config section
+# --------------------------------------------------
+# Refer to section 7 in the README for more details.
+#
+
+#
+# Below is the Primary GIE configuration section taken from DS config file
+#
+[primary-gie]
+enable=1
+# Provide the model-engine-file and labelfile-path of newly built model
+# One of the use-case is that newly built model will have better accuracy compared to previous model
+# Testing :- Here we are using the same model which we lauched during the deepstream-test5-app for
+# demonstrating model-update OTA functionlity
+model-engine-file=../../../../../samples/models/Primary_Detector/resnet10.caffemodel_b4_gpu0_int8.engine
+labelfile-path=../../../../../samples/models/Primary_Detector/labels.txt
+config-file=../../../../../samples/configs/deepstream-app/config_infer_primary.txt
