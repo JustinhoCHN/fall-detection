@@ -68,6 +68,9 @@ class EventList():
         node.prev.next = node.next
         node.next.prev = node.prev
         self.count -= 1
+
+    def remove_last(self):
+        self.remove(self.tail.prev)
     
     def find(self, obj_id):
         cur = self.head.next
@@ -89,6 +92,9 @@ def gen_obj_list(msg):
         obj_list.append(obj_dict)
     return obj_list
 
+def sound_the_alarm():
+    pass
+
 
 interval = int(config['params']['interval'])
 consumer = KafkaConsumer(bootstrap_servers= [str(config['kafka']['host'])], 
@@ -98,14 +104,26 @@ consumer.subscribe(topics = [str(config['kafka']['topic'])])
 event_list = EventList()
 
 for msg in consumer:
-    ts = time.time()
+    current_time = time.time()
+    last_ts = current_time - interval
+
+    # add the newly received event objects to the event list.
     detected_objs = gen_obj_list(msg.value)
     for i in range(len(detected_objs)):
-        event_obj = Event(ts, msg.value)
-        exist_obj = event_list.find(detected_objs[i]['obj_id'])
+        event_obj = Event(detected_objs[i])
+        exist_obj = event_list.find(detected_objs[i]['obj_id'])  # check if the same object existed already.
         if not exist_obj:
-            event_list.addFirst(event_obj)
+            event_list.addFirst(event_obj)  # if not, add it to the top of the event link list.
         else:
-            event_list.remove()
+            # if the same event object existed for a period of time, we should sound the alarm.
+            if event_obj.object_data['ts'] - exist_obj.object_data['ts'] > interval:
+                sound_the_alarm()
+                
+    # remove the timeout event objects.
+    while True:
+        if event_list.tail.prev.object_data['ts'] < last_ts:
+            event_list.remove_last()
+        else:
+            break
     
 
