@@ -6,14 +6,40 @@
 
 ### 代码目录
 
-1. deepstream-fall-detection: 里面包含deepstream版本的摔倒检测代码
+1. deepstream-fall-detection/ : 里面包含deepstream版本的摔倒检测代码
 
-2. TODO
+2. backend/ : 后台管理服务
+
+3. frontend/ : 前端界面
+
+### Roadmap
+
+- [x] 算法demo
+
+- [ ] 管理后台
+- - [x] 消息事件管理
+- - [ ] 告警代码 - *finish before 11th, Sept.*
+- - [ ] 微信通知 - *finish before 12th, Sept.*
+
+- [ ] 管理前端界面
+- - [ ] 告警记录查看 - *finish before Oct*
+- - [ ] 实时画面
+- - [ ] 配置界面 - *finish in Oct.*
+
 
 ### 如何捐赠或贡献
 
-如果您想贡献，可以贡献本项目的代码，让功能更丰富；如果您想捐赠，可以扫下面二维码请我喝杯奶茶咖啡，谢谢。
+- 如果您想贡献，可以贡献本项目的代码，让功能更丰富
 
+1. 需要懂前端、UI的朋友帮忙完善前端的页面。
+2. 熟悉DeepStream的朋友，需要帮忙实现SmartRecord功能。
+
+
+- 如果您想捐赠，可以扫下面二维码请我喝杯奶茶咖啡，谢谢。
+
+
+微信支付
 ![微信支付](./pics/wechat.png)
 
+支付宝支付
 ![支付宝](./pics/alipay.png)
