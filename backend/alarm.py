@@ -10,7 +10,7 @@ config.read('config.ini')
 
 class EventNode(object):
 
-    def __init__(self, obj_data):
+    def __init__(self, obj_data=None):
         self.prev = None
         self.next = None
         self.object_data = obj_data
@@ -34,8 +34,8 @@ class ListIterator():
 
 class EventList():
     def __init__(self):
-        self.head = EventNode(0, None)
-        self.tail = EventNode(0, None)
+        self.head = EventNode()
+        self.tail = EventNode()
         self.head.next = self.tail
         self.tail.prev = self.head
         self.count = 0
@@ -73,9 +73,12 @@ class EventList():
         self.remove(self.tail.prev)
     
     def find(self, obj_id):
-        cur = self.head.next
-        while cur and cur.object_data.obj_id != obj_id:
-            cur = cur.next
+        cur = self.head
+        while cur is not None:
+            if cur.object_data and cur.object_data['obj_id'] == obj_id:
+                return cur
+            else:
+                cur = cur.next
         return cur
 
 def gen_obj_list(msg):
@@ -110,20 +113,25 @@ for msg in consumer:
     # add the newly received event objects to the event list.
     detected_objs = gen_obj_list(msg.value)
     for i in range(len(detected_objs)):
-        event_obj = Event(detected_objs[i])
+        event_obj = EventNode(detected_objs[i])
         exist_obj = event_list.find(detected_objs[i]['obj_id'])  # check if the same object existed already.
-        if not exist_obj:
-            event_list.addFirst(event_obj)  # if not, add it to the top of the event link list.
-        else:
+        if  exist_obj:
             # if the same event object existed for a period of time, we should sound the alarm.
             if event_obj.object_data['ts'] - exist_obj.object_data['ts'] > interval:
                 sound_the_alarm()
+                print("sound the alarm**************************")
+        else:
+            event_list.addFirst(detected_objs[i])  # if not, add it to the top of the event link list.
+            print("No exist object, add to the front already.")
+            
                 
     # remove the timeout event objects.
     while True:
         if event_list.tail.prev.object_data['ts'] < last_ts:
             event_list.remove_last()
+            print("remove last one node.")
         else:
             break
-    
+    print("current number of nodes: %d" % len(event_list))
+    print("\n")
 
