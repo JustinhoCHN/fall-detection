@@ -95,8 +95,27 @@ def gen_obj_list(msg):
         obj_list.append(obj_dict)
     return obj_list
 
-def sound_the_alarm():
-    pass
+def generate_msg(data):
+    title = "检测到摔倒事件"
+    time_str = time.strftime("%Y-%m-%d %H:%M:%S",  time.localtime(data['ts']))
+    content = "%s，在%s号摄像头检测到摔倒事件，请立刻查看！" % (time_str,  data['sensorId'])
+    return content
+
+def sound_the_alarm(data):
+    msg_text = generate_msg(data)
+    url = 'https://sctapi.ftqq.com/' + config['message']['sendkey'] + '.send'
+    data = {
+        'title': "检测到摔倒事件",
+        'desp': msg_text,
+        'openid': ''
+    }
+
+    r = requests.post(url, data)
+    if r.status_code == 200:
+        print("Sending message success.")
+        print(r.text)
+    else:
+        print("WARNING: failed to send message.")
 
 
 interval = int(config['params']['interval'])
@@ -118,7 +137,7 @@ for msg in consumer:
         if  exist_obj:
             # if the same event object existed for a period of time, we should sound the alarm.
             if event_obj.object_data['ts'] - exist_obj.object_data['ts'] > interval:
-                sound_the_alarm()
+                sound_the_alarm(event_obj.object_data)
                 print("sound the alarm**************************")
         else:
             event_list.addFirst(detected_objs[i])  # if not, add it to the top of the event link list.
@@ -126,7 +145,7 @@ for msg in consumer:
             
                 
     # remove the timeout event objects.
-    while True:
+    while event_list.tail.prev.object_data:
         if event_list.tail.prev.object_data['ts'] < last_ts:
             event_list.remove_last()
             print("remove last one node.")
